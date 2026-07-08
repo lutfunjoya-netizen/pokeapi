@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        id: checkout
         uses: actions/checkout@v6
         with:
           submodules: recursive
@@ -27,11 +26,8 @@ jobs:
         run: |
           docker compose cp db:/tmp/pokeapi.pgdump ./
           ls -larth
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
-        with:
-          version: "0.11.19"
-          enable-cache: true
+      - name: Setup uv
+        uses: ./.github/actions/setup-uv
       - name: Start pokeapi
         run: |
           rm -rf .venv
@@ -56,7 +52,7 @@ jobs:
         with:
           body: |
             **Release Information:**
-            * **Date:** ${{ steps.checkout.outputs.current_time }}
+            * **Date:** ${{ github.event.head_commit.timestamp }}
             * **Commit:** [${{ github.sha }}](${{ github.server_url }}/${{ github.repository }}/commit/${{ github.sha }})
           draft: false
           prerelease: true
